@@ -1,15 +1,26 @@
 /*
- * 第三阶段测试：悬崖传感器（TCRT5000 x3）
- * 用手遮挡/移开传感器，观察串口打印和 LED 变化
- * - 绿灯 = 安全（3 个传感器都看到桌面）
- * - 红灯 = 危险（至少一个传感器看到悬空）
+ * test_3：悬崖传感器（TCRT5000 x3，自动，不需要按钮）
+ *
+ * 接线：
+ *   左传感器 DO  → GPIO 34    VCC → 5V    GND → GND
+ *   中传感器 DO  → GPIO 35    VCC → 5V    GND → GND
+ *   右传感器 DO  → GPIO 36    VCC → 5V    GND → GND
+ *
+ * 测试方法：
+ *   传感器朝下放在桌面上 → 应该全显示"桌面"
+ *   用手挡住某个传感器 / 拿到桌边悬空 → 那个显示"悬空！"
+ *
+ * 说明：
+ *   TCRT5000 DO 输出：LOW = 检测到桌面，HIGH = 悬空
+ *   绿灯 = 安全（全部检测到桌面）
+ *   红灯 = 危险（有传感器检测到悬空）
  */
 
-#define CLIFF_L   34
-#define CLIFF_M   35
-#define CLIFF_R   36
-#define LED_GREEN  2
-#define LED_RED    4
+#define CLIFF_L    34
+#define CLIFF_M    35
+#define CLIFF_R    36
+#define LED_GREEN   2
+#define LED_RED     4
 
 void setup() {
   Serial.begin(115200);
@@ -19,31 +30,44 @@ void setup() {
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
-  Serial.println("=== 第三阶段测试：悬崖传感器 ===");
-  Serial.println("用手挡住传感器 = 模拟有桌面");
-  Serial.println("移开手 = 模拟悬空(桌边)");
-  Serial.println("格式: 左 中 右 (0=有桌面, 1=悬空)");
+  Serial.println("\n=== test_3：悬崖传感器 ===");
+  Serial.println("放在桌面上 = 全绿，悬空 = 红灯报警");
+  Serial.println("每 0.5 秒刷新一次\n");
+  Serial.println("  左    中    右    状态");
+  Serial.println("  ----  ----  ----  --------");
+  delay(1000);
 }
 
 void loop() {
-  bool left   = digitalRead(CLIFF_L) == HIGH;
-  bool middle = digitalRead(CLIFF_M) == HIGH;
-  bool right  = digitalRead(CLIFF_R) == HIGH;
+  bool L = digitalRead(CLIFF_L) == HIGH;  // HIGH = 悬空
+  bool M = digitalRead(CLIFF_M) == HIGH;
+  bool R = digitalRead(CLIFF_R) == HIGH;
 
-  bool danger = left || middle || right;
+  bool danger = L || M || R;
 
-  digitalWrite(LED_GREEN, !danger);
-  digitalWrite(LED_RED, danger);
+  Serial.printf("  %s  %s  %s  ",
+    L ? "悬空" : " OK ",
+    M ? "悬空" : " OK ",
+    R ? "悬空" : " OK ");
 
-  if (danger) {
-    Serial.printf("⚠️  悬崖!  左=%d  中=%d  右=%d  ", left, middle, right);
-    if (left)   Serial.print("[左边悬空→应右转] ");
-    if (middle) Serial.print("[中间悬空→应后退] ");
-    if (right)  Serial.print("[右边悬空→应左转] ");
-    Serial.println();
+  if (!danger) {
+    Serial.println("✅ 安全");
+    digitalWrite(LED_GREEN, HIGH);
+    digitalWrite(LED_RED, LOW);
   } else {
-    Serial.println("✅ 安全  左=0  中=0  右=0");
+    // 给出建议动作
+    if (M) {
+      Serial.println("⚠️  正前方悬空 → 应该后退！");
+    } else if (L && !R) {
+      Serial.println("⚠️  左边悬空 → 应该右转！");
+    } else if (R && !L) {
+      Serial.println("⚠️  右边悬空 → 应该左转！");
+    } else {
+      Serial.println("⚠️  多个悬空 → 应该后退！");
+    }
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_RED, HIGH);
   }
 
-  delay(300);
+  delay(500);
 }

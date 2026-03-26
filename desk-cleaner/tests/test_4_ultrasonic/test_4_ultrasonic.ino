@@ -1,14 +1,22 @@
 /*
- * 第四阶段测试：超声波测距（HC-SR04）
- * 把手放在传感器前面来回移动，串口打印距离 + 字符"雷达"
+ * test_4：超声波测距（HC-SR04，自动，不需要按钮）
  *
- * 🎮 游戏：先猜桌上某个东西离多远，再看传感器量出来的数字！
+ * 接线：
+ *   TRIG → GPIO 18
+ *   ECHO → GPIO 19
+ *   VCC  → 5V
+ *   GND  → GND
+ *
+ * 测试方法：
+ *   用手在传感器前面移动，Serial Monitor 会显示距离和图形条
+ *   距离 < 8cm 时会标红报警
  */
 
-#define TRIG_PIN 18
-#define ECHO_PIN 19
+#define TRIG_PIN  18
+#define ECHO_PIN  19
+#define WARN_CM    8
 
-float measure() {
+float getDistanceCm() {
   digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
   digitalWrite(TRIG_PIN, HIGH);
@@ -25,27 +33,29 @@ void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
-  Serial.println("=== 第四阶段测试：超声波测距 ===");
-  Serial.println("把手放在传感器前面，来回移动看距离变化！");
-  Serial.println();
+  Serial.println("\n=== test_4：超声波测距 ===");
+  Serial.println("用手在传感器前面移动，观察距离变化");
+  Serial.printf("警戒距离：< %d cm\n\n", WARN_CM);
+  delay(1000);
 }
 
 void loop() {
-  float d = measure();
+  float d = getDistanceCm();
 
-  if (d > 400) {
-    Serial.println("距离: 太远了/没测到");
-  } else {
-    Serial.printf("距离: %5.1f cm  ", d);
+  // 距离条（每 2cm 一个方块，最多 50cm）
+  int bars = constrain((int)(d / 2), 0, 25);
 
-    int bars = constrain((int)(d / 2), 0, 40);
-    Serial.print("|");
-    for (int i = 0; i < bars; i++) Serial.print("=");
-    Serial.print(">");
+  Serial.printf("%6.1f cm  ", d);
 
-    if (d < 8) Serial.print("  ← 太近了! 小车会避开");
-    Serial.println();
+  for (int i = 0; i < bars; i++) Serial.print("█");
+  for (int i = bars; i < 25; i++) Serial.print("░");
+
+  if (d < WARN_CM) {
+    Serial.print("  ⚠️ 障碍物！");
+  } else if (d > 400) {
+    Serial.print("  (超出范围)");
   }
 
-  delay(300);
+  Serial.println();
+  delay(200);
 }

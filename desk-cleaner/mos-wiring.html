@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOS管模块接线教程</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #181c23;
+    --border: #282d36;
+    --red: #ef4444;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --purple: #a855f7;
+    --text: #d4d4d8;
+    --muted: #71717a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    padding: 24px 16px 50px;
+  }
+  h1 { text-align:center; color:var(--green); font-size:1.5rem; margin-bottom:6px; }
+  .sub { text-align:center; color:var(--muted); font-size:0.9rem; margin-bottom:24px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin: 0 auto 20px;
+    max-width: 820px;
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-tag {
+    display: inline-block;
+    background: var(--green);
+    color: #000;
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .warn-tag {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .test-tag {
+    display: inline-block;
+    background: var(--yellow);
+    color: #000;
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  svg { display: block; margin: 0 auto; }
+  .tip {
+    background: rgba(34,197,94,0.08);
+    border-left: 3px solid var(--green);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    margin-top: 14px;
+  }
+  .warn {
+    background: rgba(239,68,68,0.08);
+    border-left: 3px solid var(--red);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    margin-top: 14px;
+  }
+  .mono { font-family: 'DM Mono', monospace; color: var(--yellow); }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  @keyframes spin { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<h1>MOS 管模块（HW-532）怎么用</h1>
+<p class="sub">3 根信号线 + 2 根负载线，一共 5 根线</p>
+
+<!-- 第一步：认识引脚 -->
+<div class="card">
+  <h2><span class="step-tag">第 1 步</span> 认识模块上的 5 个接口</h2>
+  <svg width="100%" height="340" viewBox="0 0 700 340" style="max-width:700px">
+
+    <!-- MOS 模块板子 -->
+    <rect x="180" y="60" width="340" height="160" rx="10" fill="#1a2332" stroke="#3b82f6" stroke-width="2.5"/>
+    <text x="350" y="35" fill="#3b82f6" font-size="16" text-anchor="middle" font-weight="bold">HW-532 MOS 管模块</text>
+
+    <!-- 绿色接线柱（左侧 - 负载输出） -->
+    <rect x="195" y="95" width="60" height="55" rx="5" fill="#166534" stroke="#22c55e" stroke-width="2"/>
+    <circle cx="213" cy="113" r="8" fill="#22c55e" opacity="0.3" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="213" y="117" fill="#fff" font-size="7" text-anchor="middle">+</text>
+    <circle cx="240" cy="113" r="8" fill="#22c55e" opacity="0.3" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="240" y="117" fill="#fff" font-size="7" text-anchor="middle">-</text>
+    <text x="225" y="140" fill="#22c55e" font-size="9" text-anchor="middle" font-weight="bold">负载输出</text>
+
+    <!-- MOS 管芯片 -->
+    <rect x="310" y="90" width="40" height="40" rx="3" fill="#333" stroke="#666" stroke-width="1.5"/>
+    <text x="330" y="115" fill="#888" font-size="8" text-anchor="middle">MOS</text>
+
+    <!-- 散热片 -->
+    <rect x="370" y="85" width="30" height="50" rx="2" fill="#444" stroke="#666" stroke-width="1"/>
+
+    <!-- 右侧 3 孔（需要焊排针） -->
+    <rect x="430" y="90" width="70" height="60" rx="5" fill="none" stroke="#eab308" stroke-width="2" stroke-dasharray="4,3"/>
+    <circle cx="445" cy="120" r="5" fill="#eab308" opacity="0.4"/>
+    <circle cx="465" cy="120" r="5" fill="#eab308" opacity="0.4"/>
+    <circle cx="485" cy="120" r="5" fill="#eab308" opacity="0.4"/>
+    <text x="445" y="108" fill="#eab308" font-size="8" text-anchor="middle">SIG</text>
+    <text x="465" y="108" fill="#eab308" font-size="8" text-anchor="middle">VCC</text>
+    <text x="485" y="108" fill="#eab308" font-size="8" text-anchor="middle">GND</text>
+    <text x="465" y="165" fill="#eab308" font-size="9" text-anchor="middle">焊排针的位置</text>
+
+    <!-- 标注线 -->
+    <!-- 绿色接线柱标注 -->
+    <line x1="213" y1="150" x2="213" y2="220" stroke="#22c55e" stroke-width="1.5"/>
+    <line x1="240" y1="150" x2="240" y2="240" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="213" y="238" fill="#22c55e" font-size="12" text-anchor="middle" font-weight="bold">OUT+</text>
+    <text x="213" y="255" fill="#22c55e" font-size="10" text-anchor="middle">接风扇红线</text>
+    <text x="240" y="258" fill="#22c55e" font-size="12" text-anchor="middle" font-weight="bold">OUT-</text>
+    <text x="240" y="275" fill="#22c55e" font-size="10" text-anchor="middle">接风扇黑线</text>
+
+    <!-- SIG 标注 -->
+    <line x1="445" y1="125" x2="445" y2="210" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="445" y="228" fill="#a855f7" font-size="12" text-anchor="middle" font-weight="bold">SIG</text>
+    <text x="445" y="245" fill="#a855f7" font-size="10" text-anchor="middle">信号线</text>
+    <text x="445" y="260" fill="#a855f7" font-size="10" text-anchor="middle">接 ESP32</text>
+    <text x="445" y="275" fill="#a855f7" font-size="10" text-anchor="middle">GPIO 13</text>
+
+    <!-- VCC 标注 -->
+    <line x1="465" y1="125" x2="465" y2="290" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="465" y="305" fill="#ef4444" font-size="12" text-anchor="middle" font-weight="bold">VCC</text>
+    <text x="465" y="320" fill="#ef4444" font-size="10" text-anchor="middle">电池正极(+)</text>
+
+    <!-- GND 标注 -->
+    <line x1="485" y1="125" x2="485" y2="290" stroke="#71717a" stroke-width="1.5"/>
+    <text x="530" y="305" fill="#71717a" font-size="12" text-anchor="middle" font-weight="bold">GND</text>
+    <text x="530" y="320" fill="#71717a" font-size="10" text-anchor="middle">电池负极(-) / 共地</text>
+
+    <!-- 板子标注 -->
+    <text x="350" y="210" fill="#3b82f6" font-size="10" text-anchor="middle">板子上印着 "PWM" 和 "HW-532"</text>
+  </svg>
+</div>
+
+<!-- 第二步：完整接线图 -->
+<div class="card">
+  <h2><span class="step-tag">第 2 步</span> 完整接线图（5 根线）</h2>
+  <svg width="100%" height="480" viewBox="0 0 750 480" style="max-width:750px">
+
+    <!-- ESP32 -->
+    <rect x="30" y="30" width="140" height="180" rx="10" fill="#1a2332" stroke="#3b82f6" stroke-width="2"/>
+    <text x="100" y="60" fill="#3b82f6" font-size="14" text-anchor="middle" font-weight="bold">ESP32</text>
+    <text x="100" y="80" fill="#3b82f6" font-size="10" text-anchor="middle">主控板</text>
+    <!-- GPIO 13 -->
+    <rect x="130" y="110" width="55" height="22" rx="4" fill="#a855f7" opacity="0.2" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="157" y="125" fill="#a855f7" font-size="10" text-anchor="middle" font-weight="bold">GPIO 13</text>
+    <!-- GND -->
+    <rect x="130" y="150" width="55" height="22" rx="4" fill="#71717a" opacity="0.2" stroke="#71717a" stroke-width="1.5"/>
+    <text x="157" y="165" fill="#71717a" font-size="10" text-anchor="middle" font-weight="bold">GND</text>
+
+    <!-- MOS 模块 -->
+    <rect x="290" y="80" width="180" height="130" rx="10" fill="#1a2332" stroke="#22c55e" stroke-width="2"/>
+    <text x="380" y="110" fill="#22c55e" font-size="14" text-anchor="middle" font-weight="bold">MOS 管模块</text>
+    <text x="380" y="128" fill="#22c55e" font-size="10" text-anchor="middle">HW-532</text>
+    <!-- 引脚标签 -->
+    <rect x="295" y="148" width="35" height="18" rx="3" fill="#a855f7" opacity="0.3"/>
+    <text x="312" y="161" fill="#a855f7" font-size="9" text-anchor="middle">SIG</text>
+    <rect x="338" y="148" width="35" height="18" rx="3" fill="#ef4444" opacity="0.3"/>
+    <text x="355" y="161" fill="#ef4444" font-size="9" text-anchor="middle">VCC</text>
+    <rect x="381" y="148" width="35" height="18" rx="3" fill="#71717a" opacity="0.3"/>
+    <text x="398" y="161" fill="#71717a" font-size="9" text-anchor="middle">GND</text>
+    <rect x="428" y="148" width="35" height="18" rx="3" fill="#22c55e" opacity="0.3"/>
+    <text x="445" y="161" fill="#22c55e" font-size="9" text-anchor="middle">OUT</text>
+
+    <!-- 电池 -->
+    <rect x="290" y="310" width="180" height="90" rx="10" fill="#1a1a1a" stroke="#ef4444" stroke-width="2"/>
+    <text x="380" y="345" fill="#ef4444" font-size="14" text-anchor="middle" font-weight="bold">电池 5V</text>
+    <text x="380" y="365" fill="#ef4444" font-size="10" text-anchor="middle">（或 USB 5V 测试）</text>
+    <text x="330" y="390" fill="#ef4444" font-size="11" text-anchor="middle">红 (+)</text>
+    <text x="430" y="390" fill="#71717a" font-size="11" text-anchor="middle">黑 (-)</text>
+
+    <!-- 风扇 -->
+    <rect x="560" y="80" width="150" height="130" rx="10" fill="#1a2332" stroke="#f97316" stroke-width="2"/>
+    <text x="635" y="115" fill="#f97316" font-size="14" text-anchor="middle" font-weight="bold">5015 风扇</text>
+    <text x="635" y="135" fill="#f97316" font-size="10" text-anchor="middle">（或 280 电机）</text>
+    <!-- 风扇叶片 -->
+    <g style="transform-origin:635px 170px; animation: spin 2s linear infinite">
+      <line x1="635" y1="170" x2="635" y2="155" stroke="#f97316" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+      <line x1="635" y1="170" x2="648" y2="163" stroke="#f97316" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+      <line x1="635" y1="170" x2="648" y2="180" stroke="#f97316" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+      <line x1="635" y1="170" x2="635" y2="185" stroke="#f97316" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+      <line x1="635" y1="170" x2="622" y2="180" stroke="#f97316" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+      <line x1="635" y1="170" x2="622" y2="163" stroke="#f97316" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+    </g>
+
+    <!-- ===== 接线 ===== -->
+
+    <!-- 线 1: ESP32 GPIO13 → MOS SIG (紫色) -->
+    <path d="M 185 121 L 240 121 L 240 157 L 295 157" fill="none" stroke="#a855f7" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="240" cy="121" r="3" fill="#a855f7"/>
+    <text x="240" y="112" fill="#a855f7" font-size="9" text-anchor="middle" font-weight="bold">线 1</text>
+
+    <!-- 线 2: 电池(+) → MOS VCC (红色) -->
+    <path d="M 330 310 L 330 260 L 355 260 L 355 166" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="330" cy="260" r="3" fill="#ef4444"/>
+    <text x="310" y="250" fill="#ef4444" font-size="9" text-anchor="middle" font-weight="bold">线 2</text>
+
+    <!-- 线 3: 电池(-) → MOS GND (灰色) -->
+    <path d="M 430 310 L 430 260 L 398 260 L 398 166" fill="none" stroke="#71717a" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="430" cy="260" r="3" fill="#71717a"/>
+    <text x="450" y="250" fill="#71717a" font-size="9" text-anchor="middle" font-weight="bold">线 3</text>
+
+    <!-- 线 4&5: MOS OUT → 风扇 (橙色) -->
+    <path d="M 463 153 L 510 153 L 510 140 L 560 140" fill="none" stroke="#f97316" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 463 162 L 520 162 L 520 165 L 560 165" fill="none" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-dasharray="6,3"/>
+    <text x="510" y="130" fill="#f97316" font-size="9" text-anchor="middle" font-weight="bold">线 4&5</text>
+
+    <!-- ESP32 GND 连到电池 GND（共地） -->
+    <path d="M 157 172 L 157 440 L 430 440 L 430 400" fill="none" stroke="#71717a" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,3"/>
+    <text x="290" y="455" fill="#71717a" font-size="10" text-anchor="middle" font-weight="bold">共地！ESP32 GND 和电池 GND 必须连在一起</text>
+    <circle cx="157" cy="440" r="3" fill="#71717a"/>
+    <circle cx="430" cy="440" r="3" fill="#71717a"/>
+
+    <!-- 线路列表 -->
+    <rect x="30" y="280" width="200" height="170" rx="8" fill="rgba(34,197,94,0.05)" stroke="#22c55e" stroke-width="1"/>
+    <text x="130" y="305" fill="#22c55e" font-size="11" text-anchor="middle" font-weight="bold">接线清单（共 5 根线）</text>
+    <text x="45" y="328" fill="#a855f7" font-size="10">线1: GPIO13 → SIG</text>
+    <text x="45" y="348" fill="#ef4444" font-size="10">线2: 电池(+) → VCC</text>
+    <text x="45" y="368" fill="#71717a" font-size="10">线3: 电池(-) → GND</text>
+    <text x="45" y="388" fill="#f97316" font-size="10">线4: OUT(+) → 风扇红线</text>
+    <text x="45" y="408" fill="#f97316" font-size="10">线5: OUT(-) → 风扇黑线</text>
+    <text x="45" y="435" fill="#71717a" font-size="9">+ ESP32 GND 和电池 GND 共地</text>
+  </svg>
+</div>
+
+<!-- 没有 ESP32 怎么测试 -->
+<div class="card">
+  <h2><span class="test-tag">测试</span> 没有 ESP32 也能测试！</h2>
+  <svg width="100%" height="350" viewBox="0 0 700 350" style="max-width:700px">
+
+    <!-- 电池 -->
+    <rect x="50" y="180" width="120" height="70" rx="8" fill="#1a1a1a" stroke="#ef4444" stroke-width="2"/>
+    <text x="110" y="210" fill="#ef4444" font-size="12" text-anchor="middle" font-weight="bold">电池 5V</text>
+    <text x="110" y="230" fill="#ef4444" font-size="9" text-anchor="middle">（或 3V 两节5号）</text>
+    <text x="80" y="260" fill="#ef4444" font-size="10">红(+)</text>
+    <text x="140" y="260" fill="#71717a" font-size="10">黑(-)</text>
+
+    <!-- MOS 模块 -->
+    <rect x="260" y="100" width="180" height="120" rx="10" fill="#1a2332" stroke="#22c55e" stroke-width="2"/>
+    <text x="350" y="130" fill="#22c55e" font-size="14" text-anchor="middle" font-weight="bold">MOS 管模块</text>
+    <rect x="270" y="160" width="35" height="18" rx="3" fill="#a855f7" opacity="0.3"/>
+    <text x="287" y="173" fill="#a855f7" font-size="9" text-anchor="middle">SIG</text>
+    <rect x="313" y="160" width="35" height="18" rx="3" fill="#ef4444" opacity="0.3"/>
+    <text x="330" y="173" fill="#ef4444" font-size="9" text-anchor="middle">VCC</text>
+    <rect x="356" y="160" width="35" height="18" rx="3" fill="#71717a" opacity="0.3"/>
+    <text x="373" y="173" fill="#71717a" font-size="9" text-anchor="middle">GND</text>
+
+    <!-- 风扇 -->
+    <rect x="530" y="100" width="130" height="120" rx="10" fill="#1a2332" stroke="#f97316" stroke-width="2"/>
+    <text x="595" y="130" fill="#f97316" font-size="13" text-anchor="middle" font-weight="bold">风扇</text>
+    <g style="transform-origin:595px 175px; animation: spin 2s linear infinite">
+      <line x1="595" y1="175" x2="595" y2="155" stroke="#f97316" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+      <line x1="595" y1="175" x2="612" y2="165" stroke="#f97316" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+      <line x1="595" y1="175" x2="612" y2="188" stroke="#f97316" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+      <line x1="595" y1="175" x2="595" y2="195" stroke="#f97316" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+      <line x1="595" y1="175" x2="578" y2="188" stroke="#f97316" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+      <line x1="595" y1="175" x2="578" y2="165" stroke="#f97316" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+    </g>
+
+    <!-- 接线 -->
+    <path d="M 80 250 L 80 290 L 330 290 L 330 178" fill="none" stroke="#ef4444" stroke-width="3"/>
+    <path d="M 140 250 L 140 310 L 373 310 L 373 178" fill="none" stroke="#71717a" stroke-width="3"/>
+    <path d="M 440 155 L 530 155" fill="none" stroke="#f97316" stroke-width="3"/>
+    <path d="M 440 175 L 530 175" fill="none" stroke="#f97316" stroke-width="3" stroke-dasharray="6,3"/>
+
+    <!-- 关键：SIG 怎么接 -->
+    <rect x="150" y="20" width="280" height="60" rx="10" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="2"/>
+    <text x="290" y="45" fill="#a855f7" font-size="13" text-anchor="middle" font-weight="bold">手动测试：用杜邦线把 SIG 碰一下 VCC</text>
+    <text x="290" y="65" fill="#a855f7" font-size="11" text-anchor="middle">碰上 = 风扇转 ✅    断开 = 风扇停 ⏹</text>
+
+    <!-- SIG 跳线 -->
+    <path d="M 287 160 C 287 140, 330 140, 330 160" fill="none" stroke="#a855f7" stroke-width="3" stroke-dasharray="5,3"/>
+    <text x="308" y="135" fill="#a855f7" font-size="10" text-anchor="middle" font-weight="bold">跳线！</text>
+    <circle cx="308" cy="140" r="4" fill="#a855f7" style="animation: pulse 1s ease-in-out infinite"/>
+
+    <!-- 说明 -->
+    <text x="350" y="340" fill="#22c55e" font-size="11" text-anchor="middle">SIG 接到 VCC = 全速开 ｜ SIG 悬空 = 关</text>
+  </svg>
+
+  <div class="tip">
+    <strong>测试方法：</strong><br>
+    1. 电池红线接 VCC，黑线接 GND<br>
+    2. 风扇两根线接绿色接线柱<br>
+    3. 拿一根杜邦线，一头插 SIG，另一头<strong>碰一下 VCC</strong> → 风扇应该转起来<br>
+    4. 松开 → 风扇停<br><br>
+    这样就能验证 MOS 管和风扇都是好的，不需要 ESP32！
+  </div>
+</div>
+
+<!-- 注意事项 -->
+<div class="card">
+  <h2><span class="warn-tag">注意</span> 常见错误</h2>
+
+  <div class="warn" style="margin-top:0">
+    <strong>1. 忘记共地</strong> — ESP32 的 GND 和电池的 GND 必须连在一起，否则信号传不过去，风扇不转。
+  </div>
+
+  <div class="warn">
+    <strong>2. SIG 和 VCC 接反</strong> — SIG 是信号线（接 GPIO），VCC 是电源线（接电池正极）。板子上有印字，看清楚再接。
+  </div>
+
+  <div class="warn">
+    <strong>3. 风扇正负极接反</strong> — 鼓风机有正负极（红线正、黑线负），接反可能不转或损坏。普通直流电机接反会反转但不会坏。
+  </div>
+
+  <div class="tip">
+    <strong>两个 MOS 模块怎么接？</strong><br>
+    两个模块的 SIG 都接 GPIO 13（共用一个引脚），VCC 都接电池(+)，GND 都接电池(-)。<br>
+    一个模块的 OUT 接刷子电机，另一个模块的 OUT 接鼓风机。<br>
+    这样代码里一个 GPIO 就能同时控制两个！
+  </div>
+</div>
+
+</body>
+</html>

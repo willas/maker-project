@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>差速转向原理</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #181c23;
+    --border: #282d36;
+    --blue: #60a5fa;
+    --red: #f87171;
+    --green: #4ade80;
+    --yellow: #facc15;
+    --text: #d4d4d8;
+    --muted: #71717a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;padding:24px 16px 50px}
+  h1{text-align:center;color:var(--blue);font-size:1.5rem;margin-bottom:6px}
+  .sub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:24px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin:0 auto 20px;max-width:860px}
+  .card h2{font-size:1.05rem;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .tag{display:inline-block;background:var(--blue);color:#000;font-size:.72rem;padding:2px 10px;border-radius:20px;margin-right:8px;font-weight:700}
+  svg{display:block;margin:0 auto}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+  .box{border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+  .box h3{font-size:.95rem;margin-bottom:8px}
+  .tip{background:rgba(74,222,128,.08);border-left:3px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.88rem;margin-top:14px}
+  .warn{background:rgba(248,113,113,.08);border-left:3px solid var(--red);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.88rem;margin-top:14px}
+
+  @keyframes spinFwd{to{transform:rotate(360deg)}}
+  @keyframes spinRev{to{transform:rotate(-360deg)}}
+  @keyframes moveRight{0%,100%{transform:translateX(0)}50%{transform:translateX(15px)}}
+  @keyframes moveUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  @keyframes rotCW{0%,100%{transform:rotate(0)}50%{transform:rotate(25deg)}}
+  @keyframes rotCCW{0%,100%{transform:rotate(0)}50%{transform:rotate(-25deg)}}
+</style>
+</head>
+<body>
+
+<h1>小车怎么转弯？—— 差速转向</h1>
+<p class="sub">没有方向盘！靠左右轮子的速度差来转弯</p>
+
+<!-- 原理 -->
+<div class="card">
+  <h2><span class="tag">原理</span> 像坦克一样转弯</h2>
+  <p style="margin-bottom:16px;line-height:1.8">
+    我们的小车<strong>没有方向盘</strong>，也没有转向轮。它有<strong>两个独立的电机</strong>，分别驱动左轮和右轮。<br>
+    通过让左右轮<strong>转不同的速度/方向</strong>，就能实现各种运动：
+  </p>
+
+  <div class="grid4">
+    <!-- 前进 -->
+    <div class="box">
+      <h3 style="color:var(--green)">直走</h3>
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <g style="animation:moveUp 2s ease-in-out infinite">
+          <!-- 车身 -->
+          <rect x="45" y="50" width="70" height="80" rx="8" fill="#282d36" stroke="#4ade80" stroke-width="2"/>
+          <!-- 左轮 -->
+          <rect x="30" y="70" width="15" height="35" rx="5" fill="#4ade80" opacity="0.8"/>
+          <text x="37" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↑</text>
+          <!-- 右轮 -->
+          <rect x="115" y="70" width="15" height="35" rx="5" fill="#4ade80" opacity="0.8"/>
+          <text x="122" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↑</text>
+          <!-- 前方箭头 -->
+          <polygon points="80,35 70,50 90,50" fill="#4ade80" opacity="0.6"/>
+        </g>
+        <text x="80" y="155" fill="#4ade80" font-size="11" text-anchor="middle">两轮同速前进</text>
+      </svg>
+    </div>
+
+    <!-- 后退 -->
+    <div class="box">
+      <h3 style="color:var(--blue)">后退</h3>
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <g style="animation:moveUp 2s ease-in-out infinite;animation-direction:reverse">
+          <rect x="45" y="50" width="70" height="80" rx="8" fill="#282d36" stroke="#60a5fa" stroke-width="2"/>
+          <rect x="30" y="70" width="15" height="35" rx="5" fill="#60a5fa" opacity="0.8"/>
+          <text x="37" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↓</text>
+          <rect x="115" y="70" width="15" height="35" rx="5" fill="#60a5fa" opacity="0.8"/>
+          <text x="122" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↓</text>
+          <polygon points="80,145 70,130 90,130" fill="#60a5fa" opacity="0.6"/>
+        </g>
+        <text x="80" y="155" fill="#60a5fa" font-size="11" text-anchor="middle">两轮同速后退</text>
+      </svg>
+    </div>
+
+    <!-- 左转 -->
+    <div class="box">
+      <h3 style="color:var(--yellow)">左转</h3>
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <g style="transform-origin:80px 90px;animation:rotCCW 2s ease-in-out infinite">
+          <rect x="45" y="50" width="70" height="80" rx="8" fill="#282d36" stroke="#facc15" stroke-width="2"/>
+          <!-- 左轮：后退 / 慢 -->
+          <rect x="30" y="70" width="15" height="35" rx="5" fill="#f87171" opacity="0.8"/>
+          <text x="37" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↓</text>
+          <!-- 右轮：前进 / 快 -->
+          <rect x="115" y="70" width="15" height="35" rx="5" fill="#4ade80" opacity="0.8"/>
+          <text x="122" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↑</text>
+        </g>
+        <!-- 转弯弧线 -->
+        <path d="M 55 30 A 30 30 0 0 0 35 55" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="80" y="155" fill="#facc15" font-size="11" text-anchor="middle">左轮退 + 右轮进</text>
+      </svg>
+    </div>
+
+    <!-- 右转 -->
+    <div class="box">
+      <h3 style="color:var(--yellow)">右转</h3>
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <g style="transform-origin:80px 90px;animation:rotCW 2s ease-in-out infinite">
+          <rect x="45" y="50" width="70" height="80" rx="8" fill="#282d36" stroke="#facc15" stroke-width="2"/>
+          <!-- 左轮：前进 -->
+          <rect x="30" y="70" width="15" height="35" rx="5" fill="#4ade80" opacity="0.8"/>
+          <text x="37" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↑</text>
+          <!-- 右轮：后退 -->
+          <rect x="115" y="70" width="15" height="35" rx="5" fill="#f87171" opacity="0.8"/>
+          <text x="122" y="92" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">↓</text>
+        </g>
+        <path d="M 105 30 A 30 30 0 0 1 125 55" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="80" y="155" fill="#facc15" font-size="11" text-anchor="middle">左轮进 + 右轮退</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>一句话总结：</strong>哪边轮子慢（或后退），车就往哪边转。就像划船——左边的桨不划水，船就往左拐。
+  </div>
+</div>
+
+<!-- TB6612 怎么控制 -->
+<div class="card">
+  <h2><span class="tag">控制</span> TB6612 怎么让电机正转/反转</h2>
+
+  <svg width="100%" height="260" viewBox="0 0 700 260" style="max-width:700px">
+    <!-- TB6612 -->
+    <rect x="200" y="40" width="300" height="180" rx="12" fill="#1a2332" stroke="#60a5fa" stroke-width="2"/>
+    <text x="350" y="70" fill="#60a5fa" font-size="16" text-anchor="middle" font-weight="bold">TB6612 电机驱动板</text>
+
+    <!-- 左电机通道 -->
+    <rect x="220" y="90" width="120" height="110" rx="8" fill="rgba(250,204,21,0.06)" stroke="#facc15" stroke-width="1"/>
+    <text x="280" y="112" fill="#facc15" font-size="11" text-anchor="middle" font-weight="bold">左电机通道 (A)</text>
+    <text x="280" y="132" fill="#d4d4d8" font-size="10" text-anchor="middle">AIN1 = 方向线 1</text>
+    <text x="280" y="148" fill="#d4d4d8" font-size="10" text-anchor="middle">AIN2 = 方向线 2</text>
+    <text x="280" y="164" fill="#d4d4d8" font-size="10" text-anchor="middle">PWMA = 速度</text>
+    <text x="280" y="185" fill="#71717a" font-size="9" text-anchor="middle">输出: AO1, AO2 → 左电机</text>
+
+    <!-- 右电机通道 -->
+    <rect x="360" y="90" width="120" height="110" rx="8" fill="rgba(96,165,250,0.06)" stroke="#60a5fa" stroke-width="1"/>
+    <text x="420" y="112" fill="#60a5fa" font-size="11" text-anchor="middle" font-weight="bold">右电机通道 (B)</text>
+    <text x="420" y="132" fill="#d4d4d8" font-size="10" text-anchor="middle">BIN1 = 方向线 1</text>
+    <text x="420" y="148" fill="#d4d4d8" font-size="10" text-anchor="middle">BIN2 = 方向线 2</text>
+    <text x="420" y="164" fill="#d4d4d8" font-size="10" text-anchor="middle">PWMB = 速度</text>
+    <text x="420" y="185" fill="#71717a" font-size="9" text-anchor="middle">输出: BO1, BO2 → 右电机</text>
+
+    <!-- STBY -->
+    <rect x="310" y="210" width="80" height="22" rx="4" fill="rgba(248,113,113,0.15)" stroke="#f87171" stroke-width="1.5"/>
+    <text x="350" y="225" fill="#f87171" font-size="10" text-anchor="middle" font-weight="bold">STBY → 接 VCC!</text>
+
+    <!-- ESP32 -->
+    <rect x="20" y="80" width="130" height="120" rx="8" fill="#1a2332" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="85" y="105" fill="#a855f7" font-size="12" text-anchor="middle" font-weight="bold">ESP32</text>
+    <text x="85" y="125" fill="#d4d4d8" font-size="9" text-anchor="middle">GPIO 25 → AIN1</text>
+    <text x="85" y="140" fill="#d4d4d8" font-size="9" text-anchor="middle">GPIO 26 → AIN2</text>
+    <text x="85" y="155" fill="#d4d4d8" font-size="9" text-anchor="middle">GPIO 32 → PWMA</text>
+    <text x="85" y="175" fill="#d4d4d8" font-size="9" text-anchor="middle">GPIO 27 → BIN1</text>
+    <text x="85" y="190" fill="#d4d4d8" font-size="9" text-anchor="middle">GPIO 14 → BIN2</text>
+
+    <!-- 电机 -->
+    <rect x="560" y="90" width="100" height="45" rx="6" fill="#1a2332" stroke="#facc15" stroke-width="1.5"/>
+    <text x="610" y="118" fill="#facc15" font-size="11" text-anchor="middle" font-weight="bold">左电机 🔄</text>
+    <rect x="560" y="155" width="100" height="45" rx="6" fill="#1a2332" stroke="#60a5fa" stroke-width="1.5"/>
+    <text x="610" y="183" fill="#60a5fa" font-size="11" text-anchor="middle" font-weight="bold">右电机 🔄</text>
+
+    <!-- 连线 -->
+    <line x1="150" y1="135" x2="220" y2="135" stroke="#71717a" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <line x1="150" y1="180" x2="220" y2="160" stroke="#71717a" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <line x1="480" y1="115" x2="560" y2="115" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="480" y1="175" x2="560" y2="175" stroke="#60a5fa" stroke-width="1.5"/>
+  </svg>
+
+  <!-- 真值表 -->
+  <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:.9rem">
+    <tr style="background:#1a2332">
+      <th style="padding:8px;border:1px solid #282d36;color:var(--yellow)">想让电机</th>
+      <th style="padding:8px;border:1px solid #282d36">IN1</th>
+      <th style="padding:8px;border:1px solid #282d36">IN2</th>
+      <th style="padding:8px;border:1px solid #282d36">PWM</th>
+      <th style="padding:8px;border:1px solid #282d36;color:var(--muted)">手动测试接法</th>
+    </tr>
+    <tr>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--green);font-weight:bold">正转 ↑</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--red)">接 VCC (高)</td>
+      <td style="padding:8px;border:1px solid #282d36">接 GND (低)</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--red)">接 VCC (全速)</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--muted)">IN1碰5V, IN2碰GND, PWM碰5V</td>
+    </tr>
+    <tr>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--blue);font-weight:bold">反转 ↓</td>
+      <td style="padding:8px;border:1px solid #282d36">接 GND (低)</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--red)">接 VCC (高)</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--red)">接 VCC (全速)</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--muted)">IN1碰GND, IN2碰5V, PWM碰5V</td>
+    </tr>
+    <tr>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--muted);font-weight:bold">停止 ⏹</td>
+      <td style="padding:8px;border:1px solid #282d36">接 GND</td>
+      <td style="padding:8px;border:1px solid #282d36">接 GND</td>
+      <td style="padding:8px;border:1px solid #282d36">不接</td>
+      <td style="padding:8px;border:1px solid #282d36;color:var(--muted)">都碰GND 或 不接</td>
+    </tr>
+  </table>
+</div>
+
+<!-- 手动测试最简单方案 -->
+<div class="card">
+  <h2><span class="tag">最简</span> 不用 ESP32，最少几根线让电机转</h2>
+
+  <svg width="100%" height="350" viewBox="0 0 700 350" style="max-width:700px">
+    <!-- 电池 -->
+    <rect x="30" y="140" width="120" height="70" rx="8" fill="#1a1a1a" stroke="#f87171" stroke-width="2"/>
+    <text x="90" y="170" fill="#f87171" font-size="13" text-anchor="middle" font-weight="bold">电池</text>
+    <text x="90" y="190" fill="#f87171" font-size="10" text-anchor="middle">3V / 5V / 7.4V</text>
+    <text x="55" y="220" fill="#f87171" font-size="10">红(+)</text>
+    <text x="125" y="220" fill="#71717a" font-size="10">黑(-)</text>
+
+    <!-- TB6612 -->
+    <rect x="240" y="60" width="200" height="230" rx="10" fill="#1a2332" stroke="#60a5fa" stroke-width="2"/>
+    <text x="340" y="90" fill="#60a5fa" font-size="14" text-anchor="middle" font-weight="bold">TB6612</text>
+
+    <!-- 引脚 -->
+    <text x="260" y="120" fill="#f87171" font-size="10" font-weight="bold">VM</text>
+    <text x="260" y="140" fill="#f87171" font-size="10" font-weight="bold">VCC</text>
+    <text x="260" y="160" fill="#f87171" font-size="10" font-weight="bold">STBY</text>
+    <text x="260" y="185" fill="#71717a" font-size="10" font-weight="bold">GND</text>
+
+    <text x="260" y="215" fill="#facc15" font-size="10" font-weight="bold">AIN1</text>
+    <text x="260" y="235" fill="#facc15" font-size="10" font-weight="bold">AIN2</text>
+    <text x="260" y="255" fill="#facc15" font-size="10" font-weight="bold">PWMA</text>
+
+    <!-- 输出 -->
+    <text x="390" y="215" fill="#4ade80" font-size="10" font-weight="bold">AO1</text>
+    <text x="390" y="235" fill="#4ade80" font-size="10" font-weight="bold">AO2</text>
+
+    <!-- 电机 -->
+    <rect x="530" y="190" width="110" height="50" rx="8" fill="#1a2332" stroke="#4ade80" stroke-width="2"/>
+    <text x="585" y="220" fill="#4ade80" font-size="13" text-anchor="middle" font-weight="bold">N20 电机</text>
+
+    <!-- 接线 -->
+    <!-- 电池+ → VM, VCC, STBY（全接一起！） -->
+    <path d="M 55 210 L 55 300 L 230 300 L 230 120 L 255 120" fill="none" stroke="#f87171" stroke-width="2.5"/>
+    <line x1="230" y1="140" x2="255" y2="140" stroke="#f87171" stroke-width="2.5"/>
+    <line x1="230" y1="160" x2="255" y2="160" stroke="#f87171" stroke-width="2.5"/>
+    <circle cx="230" cy="120" r="3" fill="#f87171"/>
+    <circle cx="230" cy="140" r="3" fill="#f87171"/>
+    <circle cx="230" cy="160" r="3" fill="#f87171"/>
+    <text x="200" y="115" fill="#f87171" font-size="9" text-anchor="end">全接电池(+)</text>
+
+    <!-- 电池- → GND -->
+    <path d="M 125 210 L 125 320 L 220 320 L 220 185 L 255 185" fill="none" stroke="#71717a" stroke-width="2.5"/>
+
+    <!-- AIN1 → 电池+ (正转) -->
+    <line x1="230" y1="215" x2="255" y2="215" stroke="#f87171" stroke-width="2.5"/>
+    <circle cx="230" cy="215" r="3" fill="#f87171"/>
+    <text x="223" y="213" fill="#f87171" font-size="8" text-anchor="end">接(+)</text>
+
+    <!-- AIN2 → GND -->
+    <line x1="220" y1="235" x2="255" y2="235" stroke="#71717a" stroke-width="2.5"/>
+    <circle cx="220" cy="235" r="3" fill="#71717a"/>
+    <text x="213" y="233" fill="#71717a" font-size="8" text-anchor="end">接GND</text>
+
+    <!-- PWMA → 电池+ -->
+    <line x1="230" y1="255" x2="255" y2="255" stroke="#f87171" stroke-width="2.5"/>
+    <circle cx="230" cy="255" r="3" fill="#f87171"/>
+    <text x="223" y="253" fill="#f87171" font-size="8" text-anchor="end">接(+)</text>
+
+    <!-- 输出到电机 -->
+    <line x1="415" y1="215" x2="530" y2="210" stroke="#4ade80" stroke-width="2.5"/>
+    <line x1="415" y1="235" x2="530" y2="225" stroke="#4ade80" stroke-width="2.5"/>
+
+    <!-- 标注框 -->
+    <rect x="240" y="15" width="400" height="35" rx="8" fill="rgba(74,222,128,.08)" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="440" y="38" fill="#4ade80" font-size="12" text-anchor="middle" font-weight="bold">
+      VM、VCC、STBY、AIN1、PWMA 全都接电池(+)，AIN2 和 GND 接电池(-)
+    </text>
+  </svg>
+
+  <div class="warn">
+    <strong>最容易忘的 3 件事：</strong><br>
+    1. <strong>STBY 没接</strong> → 整个板子不工作！必须接到 VCC 或电池(+)<br>
+    2. <strong>VCC 没接</strong> → 芯片没供电，信号接了也没用<br>
+    3. <strong>VM 没接</strong> → 电机没电，信号对了也不转
+  </div>
+
+  <div class="tip">
+    <strong>记住：TB6612 需要两路电 —— </strong><br>
+    <strong>VCC</strong> = 给芯片大脑供电（3.3V 或 5V）<br>
+    <strong>VM</strong> = 给电机肌肉供电（电池电压，3V~12V）<br>
+    测试阶段两个都接电池(+)就行。
+  </div>
+</div>
+
+</body>
+</html>
